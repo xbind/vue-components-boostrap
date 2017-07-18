@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
     <v-app id="example-2" standalone>
         <v-navigation-drawer persistent light :mini-variant.sync="mini" v-model="drawer" overflow>
             <v-list class="pa-0">
@@ -36,6 +37,49 @@
             <router-view></router-view>
         </main>
     </v-app>
+=======
+    <div>
+        <header-section></header-section>
+        <div>
+          <div class="navbar navbar-default"><h3>Basic Menu</h3>
+           <menu-basic :items="datamenu"></menu-basic>
+        </div>
+          
+        </div>
+        <hr>
+        <div class="navbar navbar-default mega-menu"><h3>Mega Menu</h3>
+          <menu-mega :items="datamenu"></menu-mega>
+        </div>
+        <div class="container">
+          
+            <component :is="viewComponent"></component>
+           <auto-complete 
+            url="http://beta.json-generator.com/api/json/get/VkmamMrr7" 
+            placeholder="placeholder" 
+            limit="5"
+            start="1"
+            bgcolorselect="#333333">
+            <template scope="item">
+                <h4>{{ item.text.name }}</h4>
+                <p>{{ item.text.email }}</p>
+                <!--default template
+                  <h4>{{item.value?item.value:item.name}}</h4>
+                -->
+              </template>
+            </auto-complete>
+            <p>Auto complete hoạt động chính xác khi server trả về keywork đk tìm kiếm, truy vấn trên server</p>
+            <br>
+            <br>
+            <br>
+        </div>
+        <div>
+          
+          <button type="button" @click="addSlider" class="btn btn-success">Add Slider</button>
+          
+        </div>
+        <footer-section></footer-section>
+    </div>
+>>>>>>> e5b748bfb0f3ed4a94b59944c2105011fbd6459b
 </template>
 
 <!--<div>-->
@@ -53,6 +97,7 @@
   export default {
     data () {
       return {
+<<<<<<< HEAD
         drawer: true,
         items: [
           {title: 'Home', icon: 'dashboard'},
@@ -60,6 +105,10 @@
         ],
         mini: false,
         right: null
+=======
+        viewComponent: null,
+        datamenu:null
+>>>>>>> e5b748bfb0f3ed4a94b59944c2105011fbd6459b
       }
     },
     components: {},
@@ -73,6 +122,16 @@
 //          }
 //        }
       })
+      axios.get('http://beta.json-generator.com/api/json/get/Nkx5dINH7').then((response) => {
+        this.datamenu = response.data
+      })
+    },
+    methods:{
+      addSlider:function(){
+        axios.get('http://beta.json-generator.com/api/json/get/41NIiuVHQ').then((response) => {
+        this.viewComponent = response.data
+      })
+      }
     }
   }
 </script>
