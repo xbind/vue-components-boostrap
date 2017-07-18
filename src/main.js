@@ -1,15 +1,15 @@
-require('bootstrap/dist/css/bootstrap.min.css')
+require('vuetify/dist/vuetify.min.css')
 
 import Vue from 'vue'
+import Vuetify from 'vuetify'
 
-import VueDynamic from 'vue-dynamic'
+Vue.use(Vuetify)
+
 import App from './App'
 
 import router from './router'
 
 Vue.config.productionTip = false
-
-Vue.use(VueDynamic, {name: 'dynamic'})
 
 Vue.component('HeaderSection', require('./components/Header.vue'))
 Vue.component('FooterSection', require('./components/Footer.vue'))
