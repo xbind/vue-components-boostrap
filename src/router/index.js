@@ -4,6 +4,7 @@ import Router from 'vue-router'
 // IMPORT FRONT VIEW
 import Main from '@/components/Main'
 import HomePage from '@/components/pages/Home'
+import PostCreate from '@/components/pages/Post-Create'
 
 Vue.use(Router)
 
@@ -20,6 +21,12 @@ export default new Router({
           component: HomePage,
           name: 'Home',
           meta: {description: 'Trang chủ'}
+        },{
+          path: 'post-create',
+          alias: '',
+          component: PostCreate,
+          name: 'Post Create',
+          meta: {description: 'Đăng bài viết'}
         }
       ]
     }
