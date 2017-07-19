@@ -4,10 +4,10 @@
             <v-list class="pa-0">
                 <v-list-tile avatar tag="div">
                     <v-list-tile-avatar>
-                        <img src="https://randomuser.me/api/portraits/men/85.jpg"/>
+                        <img src="https://vuejs.org//images/logo.png"/>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
-                        <v-list-tile-title>John Leider</v-list-tile-title>
+                        <v-list-tile-title>Vue.js Components</v-list-tile-title>
                     </v-list-tile-content>
                     <v-list-tile-action>
                         <v-btn icon @click.native.stop="mini = !mini">
@@ -56,14 +56,14 @@
         drawer: true,
         items: [
           {
-            title: 'Home',
+            title: 'Menu Drag and Drop',
             url:'#/',
             icon: 'dashboard'
           },
           {
-            title: 'About',
+            title: 'Editor',
             url:'#/post-create',
-            icon: 'question_answer'
+            icon: 'format_color_text'
           }
         ],
         mini: false,
@@ -94,3 +94,8 @@
     }
   }
 </script>
+<style>
+.navigation-drawer:not(.navigation-drawer--is-booted) {
+    z-index: 3;
+}
+</style>

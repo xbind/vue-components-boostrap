@@ -12,15 +12,15 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Main',
+      name: 'Components',
       component: Main,
       children: [
         {
-          path: 'Home',
+          path: 'menu-drag-and-drop',
           alias: '',
           component: HomePage,
-          name: 'Home',
-          meta: {description: 'Trang chủ'}
+          name: 'Menu Drag and Drop',
+          meta: {description: 'Menu Drag and Drop'}
         },{
           path: 'post-create',
           alias: '',
