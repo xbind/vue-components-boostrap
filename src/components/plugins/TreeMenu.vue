@@ -2,8 +2,8 @@
     <draggable :element="'ul'" :list="items" class="tree"
     :options="options" @add="onAdd" :move="onMove">
         <li class="draggable" v-for="(item,index) in items"  :key="item.id" :data-id="item.id" cosllap=false :class="item.children.length>0?'group-list':''">
-            <p class="hover-menu" tabindex="1">
-                <span class="title-menu list__tile">
+            <p class="hover-menu">
+                <span class="title-menu list__tile" unselectable="on" onselectstart="return false">
                 <span class="group pa-2 handle">
                     <v-icon class="grey--text text--lighten-2">apps</v-icon>
                 </span>
@@ -60,7 +60,7 @@ var dataitemdrag
 
         fallbackClass: "sortable-fallback",  // Class name for the cloned DOM Element when using forceFallback
         fallbackOnBody: true,  // Appends the cloned DOM Element into the Document's Body
-        fallbackTolerance: 5
+        fallbackTolerance: 0
         }
       }
     },
@@ -72,6 +72,13 @@ var dataitemdrag
     isParent:Boolean,
     callbackitemactive:Function
             
+    },
+    watch:{
+        items:function(newitem){
+            for(var i=0;i<newitem.length;i++){
+                newitem[i].index = i
+            }
+        }
     },
     methods: {
        
@@ -104,28 +111,7 @@ var dataitemdrag
                 return this.parentDialog(el.$parent)
         },
         setdatadialog:function(data,action,items){
-                this.parentDialog(this).action = action
-                this.parentDialog(this).is_submenu_active_save= false
-                this.parentDialog(this).dialog=true
-                this.parentDialog(this).datatemp = data
-                if (this.parentDialog(this).action == "edit")
-					this.parentDialog(this).datadialog = {
-						id: data.id,
-						name: data.name,
-						url: "",
-						children: []
-					}
-				else if (this.parentDialog(this).action == "add")
-					this.parentDialog(this).datadialog = {
-						id: 1,
-						name: "New Title",
-						url: "",
-						children: []
-          }
-        else if(this.parentDialog(this).action =="del")
-          {
-            this.parentDialog(this).list_del = items
-          }
+                this.parentDialog(this).setdatadialog(data,action,items)
       },
       removeItem: function (/**Event*/evt,list,item) {
           this.callbackitemactive(item,"del",list)
@@ -202,24 +188,18 @@ var dataitemdrag
     .dragArea .icon {
         float: right;
     }
-    .sortable-chosen {
-        border: 1px solid #ddd;
-    }
     .sortable-chosen>p{
         margin: 0!important;
     }
     .sortable-chosen p{
-        background: #fafafa;
-    }
-    .sortable-chosen .tree:empty{
-        height:0px;
+        background: #eee;
     }
     .sortable-ghost{
         border: 2px dashed #000!important;
+        margin-left:25px!important;
     }
-    .sortable-ghost>ul>.draggable{
-        padding:0!important;
-        border:none!important;
+    .sortable-ghost *{
+        opacity:0;
     }
     body {
         background:white;
