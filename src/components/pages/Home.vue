@@ -229,11 +229,6 @@
 		margin-top: 10px;
 		margin-left: 0;
 	}
-
-	.layout-menu>ul ul {
-		border-left: 1px solid rgba(0, 0, 0, .12);
-	}
-
 	code {
 		width: 95%;
 		height: 200px;
