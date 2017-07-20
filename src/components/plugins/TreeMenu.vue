@@ -1,7 +1,8 @@
 <template>
-    <draggable :element="'ul'" :list="items" class="tree" :options="options" @add="onAdd" :move="onMove">
-        <li class="draggable " v-for="(item,index) in items" :key="item.id" :data-id="item.id" cosllap=false :class="item.children.length>0?'group-list':''">
-            <p class="hover-menu" tabindex="1">
+    <draggable :element="'ul'" :list="items" class="tree"
+    :options="options" @start="onStart" @end="onEnd" @add="onAdd" :move="onMove">
+        <li class="draggable" v-for="(item,index) in items"  :key="item.id" :data-id="item.id" cosllap=false :class="item.children.length>0?'group-list':''">
+            <p class="hover-menu" tabindex="1" v-on:mouseenter="onEnter($event,item)" v-on:mouseleave="onLeave($event,item)">
                 <span class="title-menu list__tile">
                 <span class="group pa-2 handle">
                     <v-icon class="grey--text text--lighten-2">apps</v-icon>
@@ -26,13 +27,14 @@
                 
             </p>
             
-            <treemenu v-if="item.children.length>0" :items="item.children" :callbackitemactive="setdatadialog"></treemenu>
+            <treemenu :items="item.children" :callbackitemactive="setdatadialog"></treemenu>            
         </li>        
     </draggable>
 </template>
 <script>
   import draggable from 'vuedraggable'
 //   var num_=0;
+var eldraging
 var dataitemdrag
   export default{
     name: 'treemenu',
@@ -45,7 +47,7 @@ var dataitemdrag
           delay: 0, // time in milliseconds to define when the sorting should start
 //          disabled: false, // Disables the sortable if set to true.
 //          store: null,  // @see Store
-          animation: 150,  // ms, animation speed moving items when sorting, `0` — without animation
+          animation: 0,  // ms, animation speed moving items when sorting, `0` — without animation
           handle: ".handle",  // Drag handle selector within list items
           //filter: ".remove-item",  // Selectors that do not lead to dragging (String or Function)
           //preventOnFilter: true, // Call `event.preventDefault()` when triggered `filter`
@@ -58,7 +60,7 @@ var dataitemdrag
 
         fallbackClass: "sortable-fallback",  // Class name for the cloned DOM Element when using forceFallback
         fallbackOnBody: true,  // Appends the cloned DOM Element into the Document's Body
-        fallbackTolerance: 0
+        fallbackTolerance: 5
         }
       }
     },
@@ -72,12 +74,41 @@ var dataitemdrag
             
     },
     methods: {
+        onEnd:function(){
+            eldraging=null
+            var elhavegird = document.querySelectorAll('.gird-draggable');
+            for (var i = 0; i < elhavegird.length; i++) {
+                var el = elhavegird[i];
+                console.log(el)
+                el.classList.remove('gird-draggable')
+            }
+        },
+        onStart:function(evt){
+            eldraging=evt
+            eldraging.clone.childNodes[2].classList.remove('gird-draggable')
+        },
+        onEnter:function(evt,item){
+             if(eldraging&&eldraging.clone.getAttribute('data-id')!=evt.target.parentElement.getAttribute('data-id')){
+                 //clear gird
+                var elhavegird = document.querySelectorAll('.gird-draggable');
+                for (var i = 0; i < elhavegird.length; i++) {
+                    var el = elhavegird[i];
+                    console.log(el)
+                    el.classList.remove('gird-draggable')
+                }
+                //
+                evt.target.parentElement.childNodes[2].classList.add('gird-draggable')
+             } 
+        },
+        onLeave:function(evt,item){
+         // evt.target.parentElement.lastChild.childNodes[0].classList.remove('enter')
+        },
         onAdd: function(evt){
-           this.parent_id = evt.target.parentElement.getAttribute('data-id')
-           dataitemdrag.parent_id=this.parent_id
+            this.parent_id = evt.target.parentElement.getAttribute('data-id')
+            dataitemdrag.parent_id=this.parent_id
         },
         onMove: function(evt){
-            dataitemdrag = evt.draggedContext.element
+             dataitemdrag = evt.draggedContext.element
         },
         cosllapmenu:function(e){
             var el=e.target.parentElement.parentElement.parentElement.parentElement
@@ -242,6 +273,10 @@ var dataitemdrag
     .sortable-ghost{
         border: 2px dashed #000!important;
     }
+    .sortable-ghost>ul>.draggable{
+        padding:0!important;
+        border:none!important;
+    }
     body {
         background:white;
         font:normal normal 13px/1.4 Segoe,"Segoe UI",Calibri,Helmet,FreeSans,Sans-Serif;
@@ -280,7 +315,12 @@ var dataitemdrag
         font-weight:bold;
         position:relative;
     }
+    
 
+.gird-draggable{
+    background: #ffc3c3;
+    height:50px;
+}
     /*.tree li:before {
         content:"";
         display:block;

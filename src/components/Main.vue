@@ -1,6 +1,6 @@
 <template>
     <v-app id="example-2" standalone>
-        <v-navigation-drawer persistent light :mini-variant.sync="mini" v-model="drawer" overflow>
+        <v-navigation-drawer persistent dark :mini-variant.sync="mini" v-model="drawer" overflow>
             <v-list class="pa-0">
                 <v-list-tile avatar tag="div">
                     <v-list-tile-avatar>
@@ -66,7 +66,7 @@
             icon: 'format_color_text'
           }
         ],
-        mini: false,
+        mini: true,
         right: null
       }
     },
