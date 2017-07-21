@@ -67,6 +67,7 @@
 					id: null,
 					name: "New Title",
 					url: null,
+					index: null,
 					parent_id: null,
 					children: []
 				},
@@ -74,6 +75,7 @@
 					id: null,
 					name: "New Title",
 					url: null,
+					index: null,
 					parent_id: null,
 					children: []
 				},
@@ -81,6 +83,7 @@
 						id: 1,
 						name: "Laptop",
 						url: "",
+						index: 0,
 						parent_id: null,
 						children: []
 					},
@@ -88,11 +91,13 @@
 						id: 2,
 						name: "Smartphone",
 						url: "",
+						index: 1,
 						parent_id: null,
 						children: [{
 								id: 4,
 								name: "Iphone",
 								url: "",
+								index: 0,
 								parent_id: 2,
 								children: []
 							},
@@ -100,6 +105,7 @@
 								id: 5,
 								name: "Oppo",
 								url: "",
+								index: 1,
 								parent_id: 2,
 								children: []
 							},
@@ -109,11 +115,13 @@
 						id: 3,
 						name: "Desktop",
 						url: "/desktop",
+						index: 2,
 						parent_id: null,
 						children: [{
 								id: 6,
 								name: "Windows",
 								url: "http",
+								index: 0,
 								parent_id: 3,
 								children: []
 							},
@@ -121,6 +129,7 @@
 								id: 7,
 								name: "Mac",
 								url: "",
+								index: 1,
 								parent_id: 3,
 								children: []
 							},
@@ -141,6 +150,7 @@
 					id: null,
 					name: "New Title",
 					url: "",
+					index: null,
 					parent_id: null,
 					children: []
 				}
@@ -164,6 +174,7 @@
 							id: null,
 							name: this.datadialog.name,
 							url: this.datadialog.url,
+							index: null,
 							parent_id: null,
 							children: []
 						})
@@ -172,6 +183,7 @@
 							id: this.datadialog.id,
 							name: this.datadialog.name,
 							url: this.datadialog.url,
+							index: null,
 							parent_id: this.datatemp.id,
 							children: []
 						})
@@ -202,6 +214,7 @@
 					this.datadialog = {
 						id: data.id,
 						name: data.name,
+						index: data.index,
 						url: data.url,
 						children: []
 					}
@@ -210,12 +223,11 @@
 						id: 1,
 						name: "New Title",
 						url: "",
+						index: null,
 						children: []
 					}
 				else if (action == "del") {
 					this.list_del = items
-					console.log('hi')
-					console.log(this.list_del)
 				}
 			}
 		}
@@ -229,11 +241,6 @@
 		margin-top: 10px;
 		margin-left: 0;
 	}
-
-	.layout-menu>ul ul {
-		border-left: 1px solid rgba(0, 0, 0, .12);
-	}
-
 	code {
 		width: 95%;
 		height: 200px;

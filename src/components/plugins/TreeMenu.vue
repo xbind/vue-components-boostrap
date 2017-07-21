@@ -1,9 +1,9 @@
 <template>
     <draggable :element="'ul'" :list="items" class="tree"
-    :options="options" @start="onStart" @end="onEnd" @add="onAdd" :move="onMove">
+    :options="options" @add="onAdd" :move="onMove">
         <li class="draggable" v-for="(item,index) in items"  :key="item.id" :data-id="item.id" cosllap=false :class="item.children.length>0?'group-list':''">
-            <p class="hover-menu" tabindex="1" v-on:mouseenter="onEnter($event,item)" v-on:mouseleave="onLeave($event,item)">
-                <span class="title-menu list__tile">
+            <p class="hover-menu">
+                <span class="title-menu list__tile" unselectable="on" onselectstart="return false">
                 <span class="group pa-2 handle">
                     <v-icon class="grey--text text--lighten-2">apps</v-icon>
                 </span>
@@ -60,7 +60,7 @@ var dataitemdrag
 
         fallbackClass: "sortable-fallback",  // Class name for the cloned DOM Element when using forceFallback
         fallbackOnBody: true,  // Appends the cloned DOM Element into the Document's Body
-        fallbackTolerance: 5
+        fallbackTolerance: 0
         }
       }
     },
@@ -73,36 +73,15 @@ var dataitemdrag
     callbackitemactive:Function
             
     },
-    methods: {
-        onEnd:function(){
-            eldraging=null
-            var elhavegird = document.querySelectorAll('.gird-draggable');
-            for (var i = 0; i < elhavegird.length; i++) {
-                var el = elhavegird[i];
-                console.log(el)
-                el.classList.remove('gird-draggable')
+    watch:{
+        items:function(newitem){
+            for(var i=0;i<newitem.length;i++){
+                newitem[i].index = i
             }
-        },
-        onStart:function(evt){
-            eldraging=evt
-            eldraging.clone.childNodes[2].classList.remove('gird-draggable')
-        },
-        onEnter:function(evt,item){
-             if(eldraging&&eldraging.clone.getAttribute('data-id')!=evt.target.parentElement.getAttribute('data-id')){
-                 //clear gird
-                var elhavegird = document.querySelectorAll('.gird-draggable');
-                for (var i = 0; i < elhavegird.length; i++) {
-                    var el = elhavegird[i];
-                    console.log(el)
-                    el.classList.remove('gird-draggable')
-                }
-                //
-                evt.target.parentElement.childNodes[2].classList.add('gird-draggable')
-             } 
-        },
-        onLeave:function(evt,item){
-         // evt.target.parentElement.lastChild.childNodes[0].classList.remove('enter')
-        },
+        }
+    },
+    methods: {
+       
         onAdd: function(evt){
             this.parent_id = evt.target.parentElement.getAttribute('data-id')
             dataitemdrag.parent_id=this.parent_id
@@ -132,56 +111,12 @@ var dataitemdrag
                 return this.parentDialog(el.$parent)
         },
         setdatadialog:function(data,action,items){
-                this.parentDialog(this).action = action
-                this.parentDialog(this).is_submenu_active_save= false
-                this.parentDialog(this).dialog=true
-                this.parentDialog(this).datatemp = data
-                if (this.parentDialog(this).action == "edit")
-					this.parentDialog(this).datadialog = {
-						id: data.id,
-						name: data.name,
-						url: "",
-						children: []
-					}
-				else if (this.parentDialog(this).action == "add")
-					this.parentDialog(this).datadialog = {
-						id: 1,
-						name: "New Title",
-						url: "",
-						children: []
-          }
-        else if(this.parentDialog(this).action =="del")
-          {
-            this.parentDialog(this).list_del = items
-            console.log('hi')
-          console.log(this.list_del)
-          }
-      },
-      onFilter: function (evt) {
-        //console.log('drag')
-        var el = editableList.closest(evt.item); // get dragged item
-        el && el.parentNode.removeChild(el);
+                this.parentDialog(this).setdatadialog(data,action,items)
       },
       removeItem: function (/**Event*/evt,list,item) {
           this.callbackitemactive(item,"del",list)
       },
-    //   lastId:function(arr,num){
-    //     if(arr.length<=0){
-    //         return num
-    //     }else
-    //     {
-    //         num+=(arr.length)
-    //         for (var i = 0; i < arr.length; i++) {
-    //             num = this.lastId(arr[i].children,num);
-    //         }
-    //         return num
-    //     }   
-    //   },
       addItem: function (evt,item) {
-       
-        // var num=0;
-        // num=this.lastId(items_,0)+1
-       // item.children.push( {id: 1, name: "New Item",  children: []})
         this.callbackitemactive(item,"add",null)
       },
       editItem: function (evt,item) {
@@ -192,10 +127,6 @@ var dataitemdrag
 </script>
 
 <style>
-    /*.dragArea {*/
-        /*border: 1px solid #f1f1f1;*/
-        /*padding: 20px;*/
-    /*}*/
     * li{
         list-style:none;
     }
@@ -225,7 +156,7 @@ var dataitemdrag
     }
     .tree li {
         cursor: pointer;
-        background:#fafafa;
+        background:#fff;
     }
     .tree li p {
         position:relative;
@@ -242,40 +173,33 @@ var dataitemdrag
     .tree li p:hover .settings-menu{
         display:block;
     }
-    .tree .group-list[cosllap=false]{
+    /* .tree .group-list[cosllap=false]{
         border-bottom:1px solid rgba(0,0,0,.12);
     }
     .tree .group-list[cosllap=false]>p{
         background: rgba(0,0,0,.05);
-    }
+    } */
     
     .arrow_menu{
         position: absolute;
         top: 5%;
         right: 0;
     }
-    /*.parent .dragArea{*/
-        /*border: none;*/
-    /*}*/
-
     .dragArea .icon {
         float: right;
-    }
-    .sortable-chosen {
-        border: 1px solid #ddd;
     }
     .sortable-chosen>p{
         margin: 0!important;
     }
     .sortable-chosen p{
-        background: green;
+        background: #eee;
     }
     .sortable-ghost{
         border: 2px dashed #000!important;
+        margin-left:25px!important;
     }
-    .sortable-ghost>ul>.draggable{
-        padding:0!important;
-        border:none!important;
+    .sortable-ghost *{
+        opacity:0;
     }
     body {
         background:white;
@@ -296,18 +220,6 @@ var dataitemdrag
          color: rgba(0,0,0,.87);
         position:relative;
     }
-    /*.tree:before,
-    .tree ul:before {
-        content:"";
-        display:block;
-        width:0;
-        position:absolute;
-        top:0;
-        bottom:0;
-        left:0;
-        border-left:1px solid;
-    }*/
-
     .tree li {
         margin:0;
         padding:0; /* indentation + .5em */
@@ -315,28 +227,7 @@ var dataitemdrag
         font-weight:bold;
         position:relative;
     }
-    
-
-.gird-draggable{
-    background: #ffc3c3;
-    height:50px;
-}
-    /*.tree li:before {
-        content:"";
-        display:block;
-        width:10px; 
-        height:0;
-        border-top:1px solid;
-        margin-top:-1px; 
-        position:absolute;
-        top:1em; 
-        left:-10px;
+    .tree:empty{
+        height:10px;
     }
-
-    .tree li:last-child:before {
-        background:white; 
-        height:auto;
-        top:1em; 
-        bottom:0;
-    }*/
 </style>
