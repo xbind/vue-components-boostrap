@@ -3,8 +3,12 @@ import Router from 'vue-router'
 
 // IMPORT FRONT VIEW
 import Main from '@/components/Main'
+
 import HomePage from '@/components/pages/Home'
 import PostCreate from '@/components/pages/Post-Create'
+import ErrorPage from '@/components/errors/404'
+import FileManager from '@/components/pages/FileManager.vue'
+
 
 Vue.use(Router)
 
@@ -27,6 +31,18 @@ export default new Router({
           component: PostCreate,
           name: 'Post Create',
           meta: {description: 'Đăng bài viết'}
+        },{
+          path: '404',
+          alias: '',
+          component: ErrorPage,
+          name: '',
+          meta: {}
+        },{
+          path: 'files',
+          alias: '',
+          component: FileManager,
+          name: '',
+          meta: {}
         }
       ]
     }
