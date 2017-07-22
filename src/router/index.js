@@ -5,7 +5,7 @@ import Router from 'vue-router'
 import Main from '@/components/Main'
 import HomePage from '@/components/pages/Home'
 import PostCreate from '@/components/pages/Post-Create'
-
+import AutoComplete from '@/components/AutoComplete/main'
 Vue.use(Router)
 
 export default new Router({
@@ -27,6 +27,12 @@ export default new Router({
           component: PostCreate,
           name: 'Post Create',
           meta: {description: 'Đăng bài viết'}
+        },{
+          path: 'auto-complete',
+          alias: '',
+          component: AutoComplete,
+          name: 'AutoComplete',
+          meta: {description: 'AutoComplete'}
         }
       ]
     }

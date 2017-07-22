@@ -64,6 +64,11 @@
             title: 'Editor',
             url:'#/post-create',
             icon: 'format_color_text'
+          },
+          {
+            title: 'AutoComplete',
+            url:'#/auto-complete',
+            icon: 'format_color_text'
           }
         ],
         mini: true,
