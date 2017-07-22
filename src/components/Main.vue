@@ -1,5 +1,5 @@
 <template>
-    <v-app id="example-2" standalone>
+    <v-app standalone>
         <v-navigation-drawer persistent dark :mini-variant.sync="mini" v-model="drawer" overflow>
             <v-list class="pa-0">
                 <v-list-tile avatar tag="div">
@@ -68,6 +68,10 @@
           {
             title: 'AutoComplete',
             url:'#/auto-complete',
+          },
+          {
+            title: 'FileManager',
+            url:'#/files',
             icon: 'format_color_text'
           }
         ],

@@ -20,8 +20,10 @@
     "vue": "^2.4.2",
     "vue-quill-editor": "^2.2.6",
     "vue-router": "^2.3.1",
+    "vue-upload-image": "^1.0.5",
     "vuedraggable": "^2.14.1",
-    "vuetify": "^0.14.5"
+    "vuetify": "^0.14.5",
+    "vuex": "^2.3.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",
