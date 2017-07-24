@@ -2,31 +2,40 @@
     <v-layout row>
         <v-flex>
             <v-card class="grid">
-                <v-toolbar class="white elevation-0">
-                    <v-btn icon light>
-                        <v-icon class="grey--text text--darken-2">arrow_back</v-icon>
-                    </v-btn>
-                    <v-toolbar-title class="grey--text text--darken-4">
+                <v-toolbar flat gray dense extended>
+                    <v-toolbar-title>
                         File Manager
                     </v-toolbar-title>
+                    <v-toolbar slot="extension">
+                        <v-btn icon>
+                            <v-icon>chevron_left</v-icon>
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn :class="{'blue--text' : options.showUpload}"
+                               @click.native="options.showUpload = !options.showUpload"
+                               v-tooltip:top="{ html: 'Hiển thị khung upload' }"
+                               icon>
+                            <v-icon>cloud_download</v-icon>
+                        </v-btn>
+                        <v-btn :class="{'blue--text' : options.showBreadcrumb}"
+                               @click.native="options.showBreadcrumb = !options.showBreadcrumb"
+                               v-tooltip:top="{ html: 'Hiển thị thanh địa chỉ' }" icon>
+                            <v-icon>label_outline</v-icon>
+                        </v-btn>
+                    </v-toolbar>
+
                     <v-spacer></v-spacer>
-                    <v-btn icon light>
-                        <v-icon class="grey--text text--darken-2">search</v-icon>
-                    </v-btn>
-                </v-toolbar>
-                <v-subheader>
-                    <v-breadcrumbs icons divider="chevron_right">
+                    <v-breadcrumbs v-if="options.showBreadcrumb" icons divider="chevron_right">
                         <v-breadcrumbs-item v-for="item in breakcrums" :key="item.text" :disabled="item.disabled">
                             {{ item.text }}
                         </v-breadcrumbs-item>
                     </v-breadcrumbs>
-                </v-subheader>
-
+                </v-toolbar>
                 <v-container fluid grid-list-lg>
-                    <v-layout row wrap>
+                    <v-layout v-show="options.showUpload" row wrap class="mb-2">
                         <v-flex xs12 class="text-xs-center">
                             <form :id="'file-manager-upload-form-' + id" enctype="multipart/form-data">
-                                <v-card flat class="file-manager-upload-form-container">
+                                <v-card flat class="grey lighten-3 file-manager-upload-form-container">
                                     <v-card-text>
                                         <v-icon>cloud_download</v-icon>
                                         <h5><b>Chọn</b> hoặc kéo thả tập tin vào đây!</h5>
@@ -38,46 +47,17 @@
 
                     </v-layout>
 
-                    <v-layout row wrap class="file-manager-thumbnails mt-4">
-                        <v-flex xs6 sm3 md2 class="file-manager-thumbnail" v-for="(item, key) in files" :key="key">
-                            <v-card>
-                                <v-card-media :src="item.path" height="120px">
-                                    <v-layout column class="media">
-                                        <v-card-title>
-                                            <v-spacer></v-spacer>
-                                            <v-btn icon @click.native="removeFile(item)">
-                                                <v-icon>delete</v-icon>
-                                            </v-btn>
-                                        </v-card-title>
-                                        <v-spacer></v-spacer>
-                                        <v-card-title class="white--text mt-4">
-                                            <v-icon v-if="item.type == 'dir'">folder</v-icon>
-                                            <v-icon v-if="item.type == 'file'">assignment</v-icon>
-                                        </v-card-title>
-                                    </v-layout>
-                                </v-card-media>
-
-
-                                <v-card-actions class="white">
-                                    <span class="grey--text">{{ item.basename }}</span><br>
-                                    <v-spacer></v-spacer>
-                                    <v-progress-circular v-if="item.status == 1" :size="24" :width="1" :rotate="360" :value="item.value"
-                                                         class="teal--text">
-                                        {{ item.value }}
-                                    </v-progress-circular>
-                                    <v-checkbox v-else-if="item.type != 'dir'"
-                                                v-model="filesChecked"
-                                                color="blue"
-                                                :value="item.id"
-                                                class="file-selected"
-                                                hide-details></v-checkbox>
-                                </v-card-actions>
-                            </v-card>
-                        </v-flex>
-                    </v-layout>
+                    <file-items :files="files" v-model="filesSelected" multiple></file-items>
                 </v-container>
-                <v-footer class="mt-5">
-                    <!--<v-btn @click.native="increaseValue">Tăng giá trị</v-btn>-->
+                <v-footer class="py-4">
+                    <div class="hidden-sm-and-down">
+                        <v-chip v-for="items,index in filesSelected" :key="index" class="primary white--text" small>
+                            {{items.basename}}
+                        </v-chip>
+                    </div>
+                    <v-spacer></v-spacer>
+                    <v-btn small>Cancel</v-btn>
+                    <v-btn primary small>OK</v-btn>
                 </v-footer>
             </v-card>
         </v-flex>
@@ -87,6 +67,8 @@
 <script>
   import Vue from 'vue'
   import axios from 'axios'
+
+  import FileItems from './FileItems.vue'
 
   const STATUS_INITIAL = 0, STATUS_UPLOADING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3
 
@@ -126,33 +108,32 @@
         type: String,
         required: false,
         default: 'btn btn-primary'
-      },
+      }
+    },
+    components: {
+      FileItems
     },
     data: function () {
       return {
+        options: {
+          showUpload: true,
+          showBreadcrumb: true,
+        },
         breakcrums: [
           {text: 'Home', disable: false},
           {text: 'Home', disable: false},
           {text: 'Home', disable: false},
           {text: 'Home', disable: false},
         ],
-
         id: this._uid,
         form: null,
         input: null,
         index: 0,
         total: 0,
         files: [],
-        files_preview: [],
-        filesChecked:[1,2],
-        batch: {},
+        filesSelected: [],
         onDragover: false,
         onUploading: false
-      }
-    },
-    watch: {
-      files: function (val, oldVal) {
-
       }
     },
     mounted: function () {
@@ -233,12 +214,7 @@
       increaseValue: function () {
         this.files[0].value += 10
       },
-      removeFile: function (file) {
-        console.log('Xóa file:' + file.id)
-        this.files = this.files.filter(function (item) {
-          return file.id != item.id
-        })
-      },
+
 //      selectedFile: function (event) {
 //        let element = event.target
 //        console.log(element)
@@ -254,18 +230,18 @@
 </script>
 <style lang="css">
     .file-manager-upload-form-container {
-        border: 2px dashed #ccc;
-        padding: 10px;
-        min-height: 100px;
+        padding: 20px;
         cursor: pointer;
     }
 
-    .file-manager-thumbnail {
-        cursor: pointer;
+    .file-manager-upload-form-container > div {
+        border: 2px dashed #aaa;
+        padding: 20px 0;
     }
 
-    .file-selected{
-        margin: -5px 0;
+    .file-manager-upload-form-container .icon {
+        font-size: 50px;
+        margin-bottom: 15px;
     }
 
     /*.file-manager-thumbnail {*/
