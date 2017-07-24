@@ -8,7 +8,7 @@
         <v-dialog v-model="uploadDialog" persistent width="80%">
             <v-card>
                 <v-card-text>
-                        <file-manager :callbackfileselected="fileadded" :accept="acceptfile"></file-manager>
+                        <file-manager :callbackfileselected="fileadded" :accept="acceptfile" @selected="selected"></file-manager>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -123,6 +123,12 @@
       }
     },
     methods: {
+      selected: function (items) {
+        // `this` in event callbacks are automatically bound
+        // to the instance that registered it
+        this.uploadDialog=false
+        console.log(items)
+      },
       upload: function () {
         console.log('upload')
       },

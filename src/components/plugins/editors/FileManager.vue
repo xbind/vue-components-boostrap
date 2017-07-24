@@ -67,7 +67,7 @@
                     </div>
                     <v-spacer></v-spacer>
                     <v-btn small>Cancel</v-btn>
-                    <v-btn primary small>OK</v-btn>
+                    <v-btn primary small @click.native="OK">OK</v-btn>
                 </v-footer>
             </v-card>
         </v-flex>
@@ -206,8 +206,8 @@
             vm.files = response.data
           })
       },
-      OK(){
-        this.$dispatch('selected', this.filesSelected)
+      OK:function(){
+        this.$emit('selected', this.filesSelected)
       },
       upload: function (index) {
         let vm = this
