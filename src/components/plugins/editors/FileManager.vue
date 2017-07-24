@@ -11,6 +11,11 @@
                             <v-icon>chevron_left</v-icon>
                         </v-btn>
                         <v-spacer></v-spacer>
+                        <v-btn class="blue--text"
+                               v-tooltip:top="{ html: 'Tìm kiếm' }"
+                               icon>
+                            <v-icon>search</v-icon>
+                        </v-btn>
                         <v-btn :class="{'blue--text' : options.showUpload}"
                                @click.native="options.showUpload = !options.showUpload"
                                v-tooltip:top="{ html: 'Hiển thị khung upload' }"
@@ -21,6 +26,11 @@
                                @click.native="options.showBreadcrumb = !options.showBreadcrumb"
                                v-tooltip:top="{ html: 'Hiển thị thanh địa chỉ' }" icon>
                             <v-icon>label_outline</v-icon>
+                        </v-btn>
+                        <v-btn class="blue--text"
+                               @click.native="fetchData"
+                               v-tooltip:top="{ html: 'Làm mới' }" icon>
+                            <v-icon>autorenew</v-icon>
                         </v-btn>
                     </v-toolbar>
 
@@ -154,10 +164,7 @@
         this.input.click()
       })
 
-      axios.get('http://beta.json-generator.com/api/json/get/Ny0X2gjH7')
-        .then((response) => {
-          vm.files = response.data
-        })
+   vm.fetchData();
     },
     methods: {
       dragEnter: function (e) {
@@ -191,6 +198,16 @@
           this.upload(index - 1)
         })
         reader.readAsDataURL(file)
+      },
+      fetchData(){
+        let vm = this
+        axios.get('http://beta.json-generator.com/api/json/get/Ny0X2gjH7')
+          .then((response) => {
+            vm.files = response.data
+          })
+      },
+      OK(){
+        this.$dispatch('selected', this.filesSelected)
       },
       upload: function (index) {
         let vm = this

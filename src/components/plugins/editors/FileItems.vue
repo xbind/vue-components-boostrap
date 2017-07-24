@@ -24,15 +24,15 @@
                         {{ item.value }}
                     </v-progress-circular>
                     <v-checkbox v-else-if="item.type != 'dir'"
-                                v-model="value"
-                                color="blue"
-                                :value="item"
-                                class="file-selected"
-                                disabled
-                                hide-details>
+                    v-model="value"
+                    color="blue"
+                    :value="item"
+                    class="file-selected"
+                    disabled
+                    hide-details>
                     </v-checkbox>
 
-                    <span class="grey--text">{{ item.basename }}</span>
+                    <span class="grey--text ml-4">{{ item.basename }}</span>
                 </v-card-actions>
             </v-card>
         </v-flex>
@@ -113,6 +113,7 @@
         if (i > -1) {
           this.value.splice(i, 1)
         } else {
+//          item.selected = !item.selected
           if (!this.multiple) {
             this.value.length = 0
           }
@@ -138,7 +139,7 @@
         margin: -5px -30px -5px 0;
     }
 
-    .hidden-overflow{
+    .hidden-overflow {
         overflow: hidden;
     }
 </style>
