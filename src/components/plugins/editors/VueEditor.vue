@@ -23,6 +23,14 @@
   import Quill from 'quill'
   import FileManager from './FileManager.vue'
   import IconFacebook from '../../../components/IconFacebook/index.vue'
+  import Hr from './components/hr';
+  import VButton from './components/v-button';
+   Quill.register({
+            'formats/hr': Hr
+        });
+  Quill.register({
+            'formats/v-button': VButton
+        });
   export default {
     data () {
       return {
@@ -50,20 +58,22 @@
                   [{'header': [1, 2, 3, 4, 5, 6, false]}],
                   ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
                   [{'color': []}, {'background': []}],          // dropdown with defaults from theme
-//                  ['blockquote', 'code-block'],
+                  ['blockquote', 'code-block'],
 
                   [{'list': 'ordered'}, {'list': 'bullet'}],
-//                  [{'script': 'sub'}, {'script': 'super'}],      // superscript/subscript
+                  [{'script': 'sub'}, {'script': 'super'}],      // superscript/subscript
                   [{'indent': '-1'}, {'indent': '+1'}],          // outdent/indent
-//                  [{'direction': 'rtl'}],                         // text direction
+                  [{'direction': 'rtl'}],                         // text direction
                   ['link', 'image', 'video'],
 
-//                  [{'align': []}],
+                  [{'align': []}],
 
                   ['clean'],                                         // remove formatting button
                   ['source'],                                         // remove formatting button
                   ['upload'],
-                  ['icons']
+                  ['icons'],
+                  ['hr'],
+                  ['v-button']
                 ],
                 handlers: {
                   'source': function () {
@@ -106,7 +116,13 @@
                   },
                   'icons': function () {
                    vm.iconDialog=!vm.iconDialog
-                  }
+                  },
+                  'hr': function(){
+                    vm.qill_HrHandler()
+                    },
+                  'v-button': function(){
+                    vm.qill_VButtonHandler()
+                    }
                 }
               }
             },
@@ -117,6 +133,20 @@
       }
     },
     methods: {
+      qill_HrHandler: function(){
+            // get the position of the cursor
+             let range = this.editor.getSelection(true)
+            let index = range.index + range.length
+                this.editor.insertEmbed(index,"hr","")
+            
+        },
+        qill_VButtonHandler: function(){
+            // get the position of the cursor
+             let range = this.editor.getSelection(true)
+            let index = range.index + range.length
+                this.editor.insertEmbed(index,"v-button","")
+            
+        },
       selected: function (items) {
         // `this` in event callbacks are automatically bound
         // to the instance that registered it
@@ -172,7 +202,7 @@
     },
     mounted () {
       this.editor = new Quill('#editor', this.options)
-
+  
       var test = document.querySelector('#code-editor')
       this.editor.addContainer(test)
 
@@ -182,6 +212,9 @@
         // Sử dụng khi người dùng truyền vào v-model
         this.$emit('input', this.output != 'delta' ? this.editor.root.innerHTML : this.editor.getContents())
       })
+      //component
+     
+      //
       //load custom tool
       var upload_el = document.querySelector('.ql-upload')
       var child_upload_el = document.createElement('i')
@@ -214,9 +247,12 @@
         content: "[<>]";
     }
 
-    /* .ql-upload:after {
-        content: "\f093";
-    } */
+     .ql-hr:after {
+        content: "HR";
+    } 
+    .ql-v-button:after {
+        content: "Button";
+    } 
 
     .code-editor textarea {
         width: 100%;

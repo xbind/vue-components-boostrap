@@ -18,12 +18,36 @@
 			</v-flex>
 		</v-layout>
 		<v-layout row justify-center>
-			<v-dialog v-model="dialog">
+			<v-dialog v-model="dialog" width="50%">
 				<v-card v-if="action!='del'">
 					<v-card-text>
 						<br>
 						<v-text-field label="Title" required v-model="datadialog.name"></v-text-field>
-						<v-text-field label="URL" required v-model="datadialog.url"></v-text-field>
+						<v-select
+							v-bind:items="list_type_menu"
+							v-model="typemenu"
+							label="Select"
+							single-line
+							item-text="name"
+							item-value="id"
+							return-object
+							autocomplete
+							></v-select>
+						<v-select v-show="isNameUrl"
+						v-bind:items="list_url_menu"
+						v-model="namelinkmenu"
+						label="Name"
+						item-value="id"
+						item-text="name"
+						return-object
+						autocomplete
+						id="auto-complete-url-menu"
+						></v-select>
+						<v-text-field
+						v-show="!isNameUrl"
+						label="URL"
+						v-model="urlmenu"
+						></v-text-field>
 					</v-card-text>
 					<v-card-actions>
 						<v-spacer></v-spacer>
@@ -57,6 +81,14 @@
 		name: 'Home',
 		data() {
 			return {
+				typemenu: {},
+				list_type_menu: [],
+				namelinkmenu: {},
+				urlmenu:'',
+				list_url_menu: [],
+				isNameUrl: true,
+				labelUrl: "Name",
+				////
 				var_isdialogmenu: true,
 				is_submenu_active_save: true,
 				list_del: null,
@@ -65,86 +97,89 @@
 				datadialog: {
 					id: null,
 					name: "New Title",
+					menuable_type:null,
+    				menuable_id: null,
 					url: null,
 					index: null,
 					parent_id: null,
+					description: null,
 					children: []
 				},
 				datatemp: {
 					id: null,
 					name: "New Title",
+					menuable_type:null,
+    				menuable_id: null,
 					url: null,
 					index: null,
 					parent_id: null,
+					description: null,
 					children: []
 				},
-				list: [{
-						id: 1,
-						name: "Laptop",
-						url: "",
-						index: 0,
-						parent_id: null,
-						children: []
-					},
-					{
-						id: 2,
-						name: "Smartphone",
-						url: "",
-						index: 1,
-						parent_id: null,
-						children: [{
-								id: 4,
-								name: "Iphone",
-								url: "",
-								index: 0,
-								parent_id: 2,
-								children: []
-							},
-							{
-								id: 5,
-								name: "Oppo",
-								url: "",
-								index: 1,
-								parent_id: 2,
-								children: []
-							},
-						]
-					},
-					{
-						id: 3,
-						name: "Desktop",
-						url: "/desktop",
-						index: 2,
-						parent_id: null,
-						children: [{
-								id: 6,
-								name: "Windows",
-								url: "http",
-								index: 0,
-								parent_id: 3,
-								children: []
-							},
-							{
-								id: 7,
-								name: "Mac",
-								url: "",
-								index: 1,
-								parent_id: 3,
-								children: []
-							},
-						]
-					},
-				]
+				list: []
 			}
+		},
+		watch:{
+			'typemenu':function(val){
+					if(val.name.toLowerCase() == ('Link Other').toLowerCase()){
+						this.isNameUrl = false
+						this.list_url_menu = []
+					}else{
+						this.isNameUrl = true
+					}
+				this.datadialog.menuable_type = val.name
+				this.datadialog.menuable_id = val.id
+			},
+			'namelinkmenu':function(val){
+				this.datadialog.url = val.url
+			}
+
+		},
+		mounted:function(){
+			//load list menu
+			axios.get('http://beta.json-generator.com/api/json/get/Nkx5dINH7').then((res)=>{
+				this.list = res.data
+			})
+			//
+			this.findTypeMenu()
+			let el_auto_complete_url_menu = document.querySelector('#auto-complete-url-menu input')
+			let vm = this
+			el_auto_complete_url_menu.addEventListener('input',function(e){
+				vm.findnamelinkmenu()
+			})
+
 		},
 		components: {
 			TreeMenu
 		},
 		methods: {
+			findTypeMenu:function(){
+				axios.get('http://beta.json-generator.com/api/json/get/413HB2ArQ').then((res)=>{
+					this.list_type_menu = res.data
+				})
+			},
+			findnamelinkmenu:function(){
+				console.log('find')
+				axios.get('http://beta.json-generator.com/api/json/get/E1kSEVkIm').then((res)=>{
+					this.list_url_menu = res.data
+				})
+			},
+			reset_Dialog:function(){
+				this.typemenu = this.namelinkmenu = {}
+			},
 			add: function () {
 				this.is_submenu_active_save = true
 				this.dialog = true
 				this.action = "add"
+				this.typemenu = {
+					 	id:null,
+					 	name:''
+					 	}
+					 this.namelinkmenu = {
+					 	id:null,
+					 	name:null
+					 	}
+					this.list_url_menu=[]
 				this.datadialog = {
 					id: null,
 					name: "New Title",
@@ -158,7 +193,11 @@
 				if (this.action == "edit") {
 					//save data submenus
 					this.datatemp.name = this.datadialog.name
-					this.datatemp.url = this.datadialog.url
+					this.datatemp.menuable_id = this.typemenu.id
+					this.datatemp.menuable_type = this.typemenu.name
+					this.datatemp.url = this.typemenu.name.toLowerCase()==("link other").toLowerCase()?this.urlmenu:''
+					this.datatemp.menuable_idname = this.namelinkmenu.id
+					this.datatemp.menuable_name = this.namelinkmenu.name
 					//axios edit
 					axios.get('').then((response) => {
 						//send data edit
@@ -172,7 +211,11 @@
 						this.list.push({
 							id: null,
 							name: this.datadialog.name,
-							url: this.datadialog.url,
+							menuable_id: this.typemenu.id,
+							menuable_type: this.typemenu.name,
+							menuable_idname: this.namelinkmenu.id,
+							menuable_name: this.namelinkmenu.name,
+							url: this.urlmenu,
 							index: null,
 							parent_id: null,
 							children: []
@@ -181,7 +224,11 @@
 						this.datatemp.children.push({
 							id: this.datadialog.id,
 							name: this.datadialog.name,
-							url: this.datadialog.url,
+							menuable_id: this.typemenu.id,
+							menuable_type: this.typemenu.name,
+							menuable_idname: this.namelinkmenu.id,
+							menuable_name: this.namelinkmenu.name,
+							url: this.urlmenu,
 							index: null,
 							parent_id: this.datatemp.id,
 							children: []
@@ -212,14 +259,43 @@
 				this.dialog = true
 				this.datatemp = data
 				if (action == "edit")
+				{	
+					 this.typemenu = {
+					 	id:data.menuable_id,
+					 	name:data.menuable_type
+					 	}
+					 this.namelinkmenu = {
+					 	id:data.menuable_idname,
+					 	name:data.menuable_name
+					 	}
+					this.list_url_menu= [{
+						id:data.menuable_idname,
+					 	name:data.menuable_name}]
+					this.urlmenu = data.url
 					this.datadialog = {
 						id: data.id,
 						name: data.name,
+						menuable_id: this.typemenu.id,
+						menuable_type: this.typemenu.name,
+						menuable_idname: this.namelinkmenu.id,
+						menuable_name: this.namelinkmenu.name,
 						index: data.index,
-						url: data.url,
+						url: this.urlmenu,
 						children: []
 					}
+				}
 				else if (action == "add")
+				{
+					this.typemenu = {
+					 	id:null,
+					 	name:''
+					 	}
+					 this.namelinkmenu = {
+					 	id:null,
+					 	name:null
+					 	}
+					this.list_url_menu=[]
+					this.urlmenu = null
 					this.datadialog = {
 						id: 1,
 						name: "New Title",
@@ -227,6 +303,7 @@
 						index: null,
 						children: []
 					}
+				}
 				else if (action == "del") {
 					this.list_del = items
 				}
