@@ -1,31 +1,34 @@
 <template>
-    <div v-once class="editor-container">
+    <div class="editor-container">
         <div id="editor">
         </div>
         <div id="code-editor" class="code-editor" v-show="showSource">
             <textarea v-model="source"></textarea>
         </div>
-        <v-dialog v-model="uploadDialog" persistent>
+        <v-dialog v-model="uploadDialog" persistent width="80%">
             <v-card>
-                <v-card-title class="headline">Upload Images</v-card-title>
                 <v-card-text>
-                    <v-text-field label="Email" required></v-text-field>
+                        <file-manager :callbackfileselected="fileadded" :accept="acceptfile"></file-manager>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn class="green--text darken-1" flat="flat" @click.native="uploadDialog = false">Disagree
+                    <v-btn  class="green--text darken-1" flat="flat" @click.native="uploadDialog = false">Close
                     </v-btn>
-                    <v-btn class="green--text darken-1" flat="flat" @click.native="uploadDialog = false">Agree</v-btn>
+                    <v-btn primary dark @click.native="addfile">Add</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
+          <div id="iconfacebook" tabindex="1" @focus.native.stop="iconDialog = true" @blur="iconDialog = false">
+            <IconFacebook :callbackicon="getIcon"></IconFacebook>
+          </div>
     </div>
 </template>
 
 <script>
   import axios from 'axios'
   import Quill from 'quill'
-
+  import FileManager from './FileManager.vue'
+  import IconFacebook from '../../../components/IconFacebook/index.vue'
   export default {
     data () {
       return {
@@ -33,7 +36,10 @@
         showSource: false, // Display or none Show Source Code
         source: '', //Source code value
         uploadDialog: false,
-        file: null
+        file: null,
+        files: null,
+        acceptfile:"image/*",
+        iconDialog: false
       }
     },
     props: {
@@ -62,7 +68,8 @@
 
                   ['clean'],                                         // remove formatting button
                   ['source'],                                         // remove formatting button
-                  ['upload']
+                  ['upload'],
+                  ['icons']
                 ],
                 handlers: {
                   'source': function () {
@@ -70,32 +77,41 @@
                   },
                   'image': function (image, callback) {
 
-                    let fileInput = this.container.querySelector('input.ql-image[type=file]')
-                    if (fileInput == null) {
-                      fileInput = document.createElement('input')
-                      fileInput.setAttribute('type', 'file')
-                      fileInput.setAttribute('accept', 'image/*')
-                      fileInput.classList.add('ql-image')
-                      fileInput.addEventListener('change', () => {
-                        if (fileInput.files != null && fileInput.files[0] != null) {
-                          let range = vm.editor.getSelection(true)
-                          let index = range.index + range.length
-                          vm.editor.insertEmbed(index, 'image', fileInput.files[0], vm.upload)
-                        }
-                      })
-                      this.container.appendChild(fileInput)
-                    }
-                    fileInput.click()
+                    // let fileInput = this.container.querySelector('input.ql-image[type=file]')
+                    // if (fileInput == null) {
+                    //   fileInput = document.createElement('input')
+                    //   fileInput.setAttribute('type', 'file')
+                    //   fileInput.setAttribute('accept', 'image/*')
+                    //   fileInput.classList.add('ql-image')
+                    //   fileInput.addEventListener('change', () => {
+                    //     if (fileInput.files != null && fileInput.files[0] != null) {
+                    //       let range = vm.editor.getSelection(true)
+                    //       let index = range.index + range.length
+                    //       vm.editor.insertEmbed(index, 'image', fileInput.files[0], vm.upload)
+                    //     }
+                    //   })
+                    //   this.container.appendChild(fileInput)
+                    // }
+                    // fileInput.click()
+                    console.log('Mở Upload Modal')
+                    vm.uploadDialog = true
+                    var formData = new FormData()
+                    formData.append('file', image)
                   },
                   'upload': function (file, callback) {
                     console.log('Mở Upload Modal')
+                    vm.uploadDialog = true
                     var formData = new FormData()
                     formData.append('file', file)
                     var cb = callback
+                    cb='http://via.placeholder.com/350x150'
                     axios.get('/').then((response) => {
-                      cb('http://via.placeholder.com/350x150')
+                      // cb('http://via.placeholder.com/350x150')
                     })
-//                    vm.uploadDialog = true
+                    //vm.uploadDialog = true
+                  },
+                  'icons': function () {
+                   vm.iconDialog=!vm.iconDialog
                   }
                 }
               }
@@ -109,6 +125,25 @@
     methods: {
       upload: function () {
         console.log('upload')
+      },
+      fileadded: function(val){
+        this.files = val
+      },
+      addfile: function(){
+        this.uploadDialog = false
+        for(var i= 0 ;i<this.files.length;i++){
+          let file_ex = this.files[i].extension
+          if(true){
+            let range = this.editor.getSelection(true)
+            let index = range.index + range.length
+            this.editor.insertEmbed(index, 'image', this.files[i].path)
+          }
+        }
+      },
+      getIcon:function(val){
+        let range = this.editor.getSelection(true)
+        let index = range.index + range.length
+        this.editor.insertEmbed(index, 'image', val.src)
       }
     },
     watch: {
@@ -125,7 +160,22 @@
         // Thiết lập nội dung mặc định từ V-Model
         if (this.editor.getLength() < 2)
           this.editor.pasteHTML(value)
-      }
+      },
+        'iconDialog': function(value){
+          let el = document.getElementById('iconfacebook')
+          //set location Dialog Icon
+          let elbuttonIcon = document.querySelector('.ql-icons')
+          let position_el_button_icon = elbuttonIcon.getBoundingClientRect()
+          el.style.top = (position_el_button_icon.top+ position_el_button_icon.height) + "px"
+          el.style.left = (position_el_button_icon.left-(el.getBoundingClientRect().width/2))+ "px"
+          //
+          if(value){
+            el.style.height = 'auto'
+            el.focus()
+          }else{
+            el.style.height = '0'
+          }
+        }
     },
     mounted () {
       this.editor = new Quill('#editor', this.options)
@@ -139,7 +189,23 @@
         // Sử dụng khi người dùng truyền vào v-model
         this.$emit('input', this.output != 'delta' ? this.editor.root.innerHTML : this.editor.getContents())
       })
+      //load custom tool
+      var upload_el = document.querySelector('.ql-upload')
+      var child_upload_el = document.createElement('i')
+      child_upload_el.setAttribute('class','material-icons icon')
+      child_upload_el.innerText='file_upload'
+      upload_el.appendChild(child_upload_el)
+      //
+      upload_el = document.querySelector('.ql-icons')
+      child_upload_el = document.createElement('i')
+      child_upload_el.setAttribute('class','material-icons icon')
+      child_upload_el.innerText='tag_faces'
+      upload_el.appendChild(child_upload_el)
     },
+    components:{
+      FileManager,
+      IconFacebook
+    }
   }
 
 </script>
@@ -155,9 +221,9 @@
         content: "[<>]";
     }
 
-    .ql-upload:after {
-        content: "UPLOAD";
-    }
+    /* .ql-upload:after {
+        content: "\f093";
+    } */
 
     .code-editor textarea {
         width: 100%;
@@ -179,5 +245,14 @@
     button {
         margin-bottom: inherit;
     }
+      #iconfacebook{
+        position: fixed;
+        height: 0;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        box-shadow: 0 1px 5px rgba(0,0,0,.2), 0 2px 2px rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12);
+        outline: none;
+      }
 </style>
 

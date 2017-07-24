@@ -72,7 +72,7 @@
           {
             title: 'FileManager',
             url:'#/files',
-            icon: 'format_color_text'
+            icon: 'folder'
           }
         ],
         mini: true,
