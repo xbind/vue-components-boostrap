@@ -60,7 +60,6 @@
 				var_isdialogmenu: true,
 				is_submenu_active_save: true,
 				list_del: null,
-				//itemtemp:null,
 				action: "add",
 				dialog: false,
 				datadialog: {
@@ -158,12 +157,12 @@
 			save: function () {
 				if (this.action == "edit") {
 					//save data submenus
-					//this.datatemp.id = this.datadialog.id
 					this.datatemp.name = this.datadialog.name
 					this.datatemp.url = this.datadialog.url
 					//axios edit
 					axios.get('').then((response) => {
-
+						//send data edit
+						//trả về kq xử lí
 					}).catch(error => {
 						return
 					})
@@ -189,7 +188,8 @@
 						})
 					//axios add
 					axios.get('').then((response) => {
-
+						//send data add
+						//trả về kq xử lí
 					}).catch(error => {
 						return
 					})
@@ -198,7 +198,8 @@
 					this.list_del.splice(index, 1)
 					//axios del
 					axios.get('').then((response) => {
-
+						//send data del
+						//trả về kq xử lí
 					}).catch(error => {
 						return
 					})

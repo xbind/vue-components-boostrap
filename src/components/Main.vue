@@ -66,6 +66,10 @@
             icon: 'format_color_text'
           },
           {
+            title: 'AutoComplete',
+            url:'#/auto-complete',
+          },
+          {
             title: 'FileManager',
             url:'#/files',
             icon: 'format_color_text'

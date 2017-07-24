@@ -1,15 +1,15 @@
 <template>
-<div class="autocomplete has-feedback dropdown" :class="{open:showlist}">
-        <input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" id="search"
-        :placeholder="placeholder" 
+<div class="has-feedback dropdown autocompletelacateam" :class="{open:showlist}">
+        <input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" id="autocompletesearch"
+        :placeholder="placeholder" :name="name_input"
         v-model="keyword"
         @input="input"
         @keyup="keyup"
         @focus="showlist=(items.length > 0 ? true : false)">
-        <span class="form-control-feedback" :class="icon"></span>
+        <span v-if="icon!='false'" class="form-control-feedback" :class="icon"></span>
         <ul class="dropdown-menu">
            <li v-for="item in items">
-            <a href="#"
+            <a
             @click="go(item)" 
             @keyup="keyup"
             @keyup.enter="go(item)">
@@ -22,8 +22,8 @@
     </div>
 </template>
 <script>
-import axios from 'axios'
-    export default {
+    
+export default {
         props: {
             url: {
                 type: String,
@@ -60,8 +60,11 @@ import axios from 'axios'
             iconleft:{
                 type: String,
                 default: 'false'
+            },
+            name_input:{
+                type: String,
+                default: 'search'
             }
-
         },
         data() {
             return {
@@ -73,6 +76,7 @@ import axios from 'axios'
             }
         },
         mounted: function () {
+            require('./style.css');
             this.setOption();
 
         },
@@ -82,8 +86,8 @@ import axios from 'axios'
                if (this.keyword.length >= this.start){
                     this.search();
                     if(this.items.length>0){
-                        if(!$(".autocomplete.dropdown").hasClass('open'))
-                            $(".autocomplete .dropdown-toggle").dropdown("toggle");
+                        if(!$(".dropdown").hasClass('open'))
+                            $(".dropdown-toggle").dropdown("toggle");
                     }
                 }else{
                     this.items={};
@@ -99,10 +103,12 @@ import axios from 'axios'
             },
             index: function(){
                 if(this.index==-1){
-                    $('.autocomplete #search').focus();
+                    //$('#autocompletesearch').focus();
+                    document.getElementById('autocompletesearch').focus()
                     return;
                 }
-                $('.autocomplete .dropdown-menu>li>a')[this.index].focus();
+                //$('.dropdown-menu>li>a')[this.index].focus();
+                document.querySelector('.dropdown-menu>li>a')
             }
         },
         methods: {
@@ -160,7 +166,8 @@ import axios from 'axios'
             },
             focusEnter: function () {
                 this.index = -1;
-                $('.autocomplete #search').focus();
+                //$('#autocompletesearch').focus();
+                 document.getElementById('autocompletesearch').focus()
             },
             go: function (data) {
                 this.focusEnter();
@@ -179,7 +186,7 @@ import axios from 'axios'
         --align-rigth:0px;
     }
 
-.autocomplete  .dropdown-menu {
+    .dropdown-menu {
         padding: 0;
         border: none;
         width:100%;
@@ -187,11 +194,11 @@ import axios from 'axios'
         overflow-y: auto;
     }
 
-.autocomplete .dropdown-menu>li {
+    .dropdown-menu>li {
         border-bottom: 1px solid #ddd;
     }
 
-.autocomplete .dropdown-menu>li>a {
+    .dropdown-menu>li>a {
         list-style: none;
         padding: 5px 10px;
         cursor: pointer;
@@ -200,27 +207,27 @@ import axios from 'axios'
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-.autocomplete .dropdown-menu>li>a:hover,
-.autocomplete .dropdown-menu>li>a:focus {
+    .dropdown-menu>li>a:hover,
+    .dropdown-menu>li>a:focus {
         background-color: var(--bg-color-hover);
         color: #ffffff;
     }
-.autocomplete  #search{
+    #autocompletesearch{
         position: relative;
         background: transparent;
     }
-.autocomplete #searchalpha{
+    #searchalpha{
         position: absolute;
         background-color: #fff;
         color: #d7d7d7;
         top: 0;
         left: 0;
     }
-.autocomplete.has-feedback input {
+.has-feedback input {
     padding-left: var(--num-padding-left);
     padding-right: var(--num-padding-right);
 }
-.autocomplete.has-feedback .form-control-feedback {
+.has-feedback .form-control-feedback {
     right: var(--align-rigth);
     left: var(--align-left);
 }

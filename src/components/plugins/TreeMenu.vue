@@ -24,18 +24,15 @@
                         <v-icon>keyboard_arrow_up</v-icon>
                         </v-btn>
                 </span>
-                
             </p>
-            
             <treemenu :items="item.children" :callbackitemactive="setdatadialog"></treemenu>            
         </li>        
     </draggable>
 </template>
 <script>
   import draggable from 'vuedraggable'
-//   var num_=0;
-var eldraging
-var dataitemdrag
+    var eldraging
+    var dataitemdrag
   export default{
     name: 'treemenu',
     data(){

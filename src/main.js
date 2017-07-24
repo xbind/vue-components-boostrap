@@ -1,6 +1,6 @@
 require('vuetify/dist/vuetify.min.css')
 require('quill/dist/quill.snow.css')
-require('./assets/css/style.scss')
+//require('./assets/css/style.scss')
 
 import Vue from 'vue'
 import Vuetify from 'vuetify'

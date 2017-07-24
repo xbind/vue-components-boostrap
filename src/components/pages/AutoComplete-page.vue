@@ -1,0 +1,29 @@
+<template>
+    <TreeMenu></TreeMenu>
+</template>
+<script>
+	import TreeMenu from '../AutoComplete/main.vue'
+    export default{
+    data(){
+        return{
+            list:[
+                {
+                    title:'A',
+                    des:'abc'
+                },
+                {
+                    title:'B',
+                    des:'abc'
+                },
+                {
+                    title:'B',
+                    des:'abc'
+                }
+            ]
+        }
+    },
+    components:{
+        TreeMenu
+    }
+    }
+</script>

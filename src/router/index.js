@@ -6,6 +6,7 @@ import Main from '@/components/Main'
 
 import HomePage from '@/components/pages/Home'
 import PostCreate from '@/components/pages/Post-Create'
+import AutoComplete from '@/components/AutoComplete/main'
 import ErrorPage from '@/components/errors/404'
 import FileManager from '@/components/pages/FileManager.vue'
 
@@ -31,6 +32,12 @@ export default new Router({
           component: PostCreate,
           name: 'Post Create',
           meta: {description: 'Đăng bài viết'}
+        },{
+          path: 'auto-complete',
+          alias: '',
+          component: AutoComplete,
+          name: 'AutoComplete',
+          meta: {description: 'AutoComplete'}
         },{
           path: '404',
           alias: '',
