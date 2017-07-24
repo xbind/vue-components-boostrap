@@ -8,15 +8,9 @@
         <v-dialog v-model="uploadDialog" persistent width="80%">
             <v-card>
                 <v-card-text>
-                        <file-manager :callbackfileselected="fileadded" :accept="acceptfile" @selected="selected"></file-manager>
+                        <file-manager :accept="acceptfile" @selected="selected"></file-manager>
                 </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn  class="green--text darken-1" flat="flat" @click.native="uploadDialog = false">Close
-                    </v-btn>
-                    <v-btn primary dark @click.native="addfile">Add</v-btn>
-                </v-card-actions>
-            </v-card>
+                </v-card>
         </v-dialog>
           <div id="iconfacebook" tabindex="1" @focus.native.stop="iconDialog = true" @blur="iconDialog = false">
             <IconFacebook :callbackicon="getIcon"></IconFacebook>
@@ -127,24 +121,17 @@
         // `this` in event callbacks are automatically bound
         // to the instance that registered it
         this.uploadDialog=false
-        console.log(items)
+        Object.keys(items).forEach(function(element) {
+          let range = this.editor.getSelection(true)
+            let index = range.index + range.length
+            this.editor.insertEmbed(index, 'image', items[element].path)
+        }, this);
       },
       upload: function () {
         console.log('upload')
       },
       fileadded: function(val){
         this.files = val
-      },
-      addfile: function(){
-        this.uploadDialog = false
-        for(var i= 0 ;i<this.files.length;i++){
-          let file_ex = this.files[i].extension
-          if(true){
-            let range = this.editor.getSelection(true)
-            let index = range.index + range.length
-            this.editor.insertEmbed(index, 'image', this.files[i].path)
-          }
-        }
       },
       getIcon:function(val){
         let range = this.editor.getSelection(true)

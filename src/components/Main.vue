@@ -68,6 +68,7 @@
           {
             title: 'AutoComplete',
             url:'#/auto-complete',
+            icon:'pageview'
           },
           {
             title: 'FileManager',

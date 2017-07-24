@@ -208,6 +208,7 @@
       },
       OK:function(){
         this.$emit('selected', this.filesSelected)
+        this.filesSelected=[]
       },
       upload: function (index) {
         let vm = this
