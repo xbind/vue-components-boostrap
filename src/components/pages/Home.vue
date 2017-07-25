@@ -131,7 +131,11 @@
 				this.datadialog.menuable_id = val.id
 			},
 			'namelinkmenu':function(val){
-				this.datadialog.url = val.url
+				this.datadialog.menuable_idname = val.id
+				this.datadialog.menuable_name = val.name
+			},
+			'urlmenu':function(val){
+				this.datadialog.url= (!this.isNameUrl)?val:''
 			}
 
 		},
@@ -191,24 +195,33 @@
 			},
 			save: function () {
 				if (this.action == "edit") {
-					//save data submenus
-					this.datatemp.name = this.datadialog.name
-					this.datatemp.menuable_id = this.typemenu.id
-					this.datatemp.menuable_type = this.typemenu.name
-					this.datatemp.url = this.typemenu.name.toLowerCase()==("link other").toLowerCase()?this.urlmenu:''
-					this.datatemp.menuable_idname = this.namelinkmenu.id
-					this.datatemp.menuable_name = this.namelinkmenu.name
 					//axios edit
-					axios.get('').then((response) => {
+					var edited = false
+					axios.get('/menu/edit',{data:this.datadialog}).then((response) => {
 						//send data edit
 						//trả về kq xử lí
+						edited = response.data.edited
 					}).catch(error => {
 						return
 					})
+					if(edited){
+						//save data submenus
+					this.datatemp.name = this.datadialog.name
+					this.datatemp.menuable_id = this.datadialog.menuable_id
+					this.datatemp.menuable_type = this.datadialog.menuable_type
+					this.datatemp.url = this.isNameUrl?null:this.datadialog.url
+					this.datatemp.menuable_idname = this.isNameUrl?this.datadialog.menuable_idname:null
+					this.datatemp.menuable_name =  this.isNameUrl?this.datadialog.menuable_name:null
+					this.datatemp.index = this.datadialog.index
+					this.datatemp.id = this.datadialog.id
+					this.datatemp.parent_id = this.datadialog.id
+					}	
 				} else if (this.action == "add") {
 					//save when add menu
+					var data_send = {}
 					if (this.is_submenu_active_save)
-						this.list.push({
+						{
+							data_send = {
 							id: null,
 							name: this.datadialog.name,
 							menuable_id: this.typemenu.id,
@@ -216,40 +229,63 @@
 							menuable_idname: this.namelinkmenu.id,
 							menuable_name: this.namelinkmenu.name,
 							url: this.urlmenu,
-							index: null,
+							index: this.datadialog.index,
 							parent_id: null,
-							children: []
-						})
-					else
-						this.datatemp.children.push({
-							id: this.datadialog.id,
+							children: []}
+							//axios add
+							var added = false
+							axios.get('/menu/add',{data:data_send}).then((response) => {
+								//send data add
+								//trả về kq xử lí
+								data_send.id = response.data.id
+								added = response.data.added
+							}).catch(error => {
+								return
+							})
+							//add on client
+							if(added)
+								this.list.push(data_send)
+						}	
+					else{
+						data_send = {
+							id: null,
 							name: this.datadialog.name,
 							menuable_id: this.typemenu.id,
 							menuable_type: this.typemenu.name,
 							menuable_idname: this.namelinkmenu.id,
 							menuable_name: this.namelinkmenu.name,
 							url: this.urlmenu,
-							index: null,
+							index: this.datadialog.index,
 							parent_id: this.datatemp.id,
-							children: []
-						})
-					//axios add
-					axios.get('').then((response) => {
-						//send data add
-						//trả về kq xử lí
-					}).catch(error => {
-						return
-					})
+							children: []}
+							//axios add
+							var added = false
+							axios.get('/menu/add',{data:data_send}).then((response) => {
+								//send data add
+								//trả về kq xử lí
+								data_send.id = response.data.id
+								added = response.data.added
+							}).catch(error => {
+								return
+							})
+							//add on client 
+							if(added)
+							this.datatemp.children.push(data_send)
+					}
 				} else if (this.action == "del") {
-					var index = this.list_del.indexOf(this.datatemp)
-					this.list_del.splice(index, 1)
 					//axios del
-					axios.get('').then((response) => {
+					var delelted = false
+					axios.get('/menu/del',{id:this.datatemp.id}).then((response) => {
 						//send data del
 						//trả về kq xử lí
+						delelted = response.data.delelted
 					}).catch(error => {
 						return
 					})
+					if(delelted){
+						var index = this.list_del.indexOf(this.datatemp)
+						this.list_del.splice(index, 1)
+					}
 				}
 				this.dialog = false
 			},
@@ -269,8 +305,8 @@
 					 	name:data.menuable_name
 					 	}
 					this.list_url_menu= [{
-						id:data.menuable_idname,
-					 	name:data.menuable_name}]
+						id: this.namelinkmenu.id,
+					 	name: this.namelinkmenu.name}]
 					this.urlmenu = data.url
 					this.datadialog = {
 						id: data.id,
