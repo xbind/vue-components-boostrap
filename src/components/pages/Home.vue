@@ -27,10 +27,6 @@
 							v-bind:items="list_type_menu"
 							v-model="typemenu"
 							label="Select"
-							single-line
-							item-text="name"
-							item-value="id"
-							return-object
 							autocomplete
 							></v-select>
 						<v-select v-show="isNameUrl"
@@ -81,11 +77,11 @@
 		name: 'Home',
 		data() {
 			return {
-				typemenu: {},
+				typemenu:'',
 				list_type_menu: [],
-				namelinkmenu: {},
 				urlmenu:'',
 				list_url_menu: [],
+				namelinkmenu:{},
 				isNameUrl: true,
 				labelUrl: "Name",
 				////
@@ -121,21 +117,16 @@
 		},
 		watch:{
 			'typemenu':function(val){
-					if(val.name.toLowerCase() == ('Link Other').toLowerCase()){
+				if(val!=null)
+					if(val.toLowerCase() == ('Link Other').toLowerCase()){
 						this.isNameUrl = false
 						this.list_url_menu = []
+						this.urlmenu=null
+						this.namelinkmenu.id = null
 					}else{
 						this.isNameUrl = true
 					}
-				this.datadialog.menuable_type = val.name
-				this.datadialog.menuable_id = val.id
-			},
-			'namelinkmenu':function(val){
-				this.datadialog.menuable_idname = val.id
-				this.datadialog.menuable_name = val.name
-			},
-			'urlmenu':function(val){
-				this.datadialog.url= (!this.isNameUrl)?val:''
+				this.namelinkmenu.name = val
 			}
 
 		},
@@ -169,21 +160,14 @@
 				})
 			},
 			reset_Dialog:function(){
-				this.typemenu = this.namelinkmenu = {}
+				this.typemenu = null
 			},
 			add: function () {
 				this.is_submenu_active_save = true
 				this.dialog = true
 				this.action = "add"
-				this.typemenu = {
-					 	id:null,
-					 	name:''
-					 	}
-					 this.namelinkmenu = {
-					 	id:null,
-					 	name:null
-					 	}
-					this.list_url_menu=[]
+				this.typemenu = null
+				this.list_url_menu=[]
 				this.datadialog = {
 					id: null,
 					name: "New Title",
@@ -195,8 +179,13 @@
 			},
 			save: function () {
 				if (this.action == "edit") {
+					this.datadialog.menuable_id = this.namelinkmenu.id
+					this.datadialog.menuable_value = this.namelinkmenu.name
+					this.datadialog.menuable_type = this.typemenu
+					this.datadialog.url = this.urlmenu
 					//axios edit
-					var edited = false
+					var edited = true 
+					var slugmenu = "/slug/abc"
 					axios.get('/menu/edit',{data:this.datadialog}).then((response) => {
 						//send data edit
 						//trả về kq xử lí
@@ -209,9 +198,8 @@
 					this.datatemp.name = this.datadialog.name
 					this.datatemp.menuable_id = this.datadialog.menuable_id
 					this.datatemp.menuable_type = this.datadialog.menuable_type
-					this.datatemp.url = this.isNameUrl?null:this.datadialog.url
-					this.datatemp.menuable_idname = this.isNameUrl?this.datadialog.menuable_idname:null
-					this.datatemp.menuable_name =  this.isNameUrl?this.datadialog.menuable_name:null
+					this.datatemp.url = this.isNameUrl?slugmenu:this.datadialog.url
+					this.datatemp.menuable_value = this.isNameUrl?this.datadialog.menuable_value:null
 					this.datatemp.index = this.datadialog.index
 					this.datatemp.id = this.datadialog.id
 					this.datatemp.parent_id = this.datadialog.id
@@ -224,20 +212,20 @@
 							data_send = {
 							id: null,
 							name: this.datadialog.name,
-							menuable_id: this.typemenu.id,
-							menuable_type: this.typemenu.name,
-							menuable_idname: this.namelinkmenu.id,
-							menuable_name: this.namelinkmenu.name,
+							menuable_id: this.namelinkmenu.id,
+							menuable_type: this.typemenu,
+							menuable_value: this.isNameUrl?this.namelinkmenu.name:null,
 							url: this.urlmenu,
 							index: this.datadialog.index,
 							parent_id: null,
 							children: []}
 							//axios add
-							var added = false
+							var added = true
 							axios.get('/menu/add',{data:data_send}).then((response) => {
 								//send data add
 								//trả về kq xử lí
 								data_send.id = response.data.id
+								data_send.url = response.data.url
 								added = response.data.added
 							}).catch(error => {
 								return
@@ -250,20 +238,20 @@
 						data_send = {
 							id: null,
 							name: this.datadialog.name,
-							menuable_id: this.typemenu.id,
-							menuable_type: this.typemenu.name,
-							menuable_idname: this.namelinkmenu.id,
-							menuable_name: this.namelinkmenu.name,
+							menuable_id: this.namelinkmenu.id,
+							menuable_type: this.typemenu,
+							menuable_value: this.isNameUrl?this.namelinkmenu.name:null,
 							url: this.urlmenu,
 							index: this.datadialog.index,
 							parent_id: this.datatemp.id,
 							children: []}
 							//axios add
-							var added = false
+							var added = true
 							axios.get('/menu/add',{data:data_send}).then((response) => {
 								//send data add
 								//trả về kq xử lí
 								data_send.id = response.data.id
+								data_send.url = response.data.url
 								added = response.data.added
 							}).catch(error => {
 								return
@@ -274,7 +262,7 @@
 					}
 				} else if (this.action == "del") {
 					//axios del
-					var delelted = false
+					var delelted = true
 					axios.get('/menu/del',{id:this.datatemp.id}).then((response) => {
 						//send data del
 						//trả về kq xử lí
@@ -292,29 +280,26 @@
 			setdatadialog: function (data, action, items) {
 				this.action = action
 				this.is_submenu_active_save = false
+				if(action!='drop')
 				this.dialog = true
 				this.datatemp = data
 				if (action == "edit")
 				{	
-					 this.typemenu = {
-					 	id:data.menuable_id,
-					 	name:data.menuable_type
-					 	}
+					 this.typemenu = data.menuable_type
 					 this.namelinkmenu = {
-					 	id:data.menuable_idname,
-					 	name:data.menuable_name
+					 	id:data.menuable_id,
+					 	name:data.menuable_value
 					 	}
-					this.list_url_menu= [{
+					this.list_url_menu= this.isNameUrl?[{
 						id: this.namelinkmenu.id,
-					 	name: this.namelinkmenu.name}]
-					this.urlmenu = data.url
+					 	name: this.namelinkmenu.name}]:[]
+					 this.urlmenu = data.url
 					this.datadialog = {
 						id: data.id,
 						name: data.name,
-						menuable_id: this.typemenu.id,
-						menuable_type: this.typemenu.name,
-						menuable_idname: this.namelinkmenu.id,
-						menuable_name: this.namelinkmenu.name,
+						menuable_id: this.namelinkmenu.id,
+						menuable_type: this.typemenu,
+						menuable_value: this.namelinkmenu.name,
 						index: data.index,
 						url: this.urlmenu,
 						children: []
@@ -322,10 +307,7 @@
 				}
 				else if (action == "add")
 				{
-					this.typemenu = {
-					 	id:null,
-					 	name:''
-					 	}
+					this.typemenu = null
 					 this.namelinkmenu = {
 					 	id:null,
 					 	name:null
@@ -335,13 +317,19 @@
 					this.datadialog = {
 						id: 1,
 						name: "New Title",
-						url: "",
+						url: null,
 						index: null,
+						menuable_id: null,
+						menuable_type:null,
+						menuable_value:null,
 						children: []
 					}
 				}
 				else if (action == "del") {
 					this.list_del = items
+				}
+				else if (action == "drop") {
+					console.log(data)
 				}
 			}
 		}

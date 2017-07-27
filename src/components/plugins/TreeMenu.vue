@@ -82,6 +82,8 @@
         onAdd: function(evt){
             this.parent_id = evt.target.parentElement.getAttribute('data-id')
             dataitemdrag.parent_id=this.parent_id
+            //callback change index ! send
+            this.callbackitemactive(dataitemdrag,"drop",this.items)
         },
         onMove: function(evt){
              dataitemdrag = evt.draggedContext.element
